@@ -24,6 +24,7 @@ async function run() {
         const usersPackageCollection = client.db('packageCollection').collection('usersPackage');
         const orderCollection = client.db('packageCollection').collection('orders');
         const taskCollection = client.db('taskCollection').collection('tasks');
+        const completeTaskCollection = client.db('taskCollection').collection('complete');
 
         // Get all packages
         app.get('/packages', async (req, res) => {
@@ -132,6 +133,24 @@ async function run() {
         app.post('/successBuy', async (req, res) => {
             const info = req.body;
             const result = await usersPackageCollection.insertOne(info);
+            res.send(result);
+        });
+        app.get('/checkPackage/:email', async (req, res) => {
+            const userEmail = req.params.email;
+            const result = await usersPackageCollection.findOne({ buyer: userEmail });
+            res.send(result);
+        });
+
+        app.post('/completeTask/:email', async (req, res) => {
+            const email = req.params.email;
+            const info = req.body;
+            // user: user.email, taskId: id, date
+            const information = {
+                date: info.date, information: {
+                    taskId: info.taskId, user: info.user
+                }
+            };
+            const result = await completeTaskCollection.insertOne(information);
             res.send(result);
         })
     }
