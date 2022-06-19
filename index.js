@@ -25,6 +25,7 @@ async function run() {
         const orderCollection = client.db('packageCollection').collection('orders');
         const taskCollection = client.db('taskCollection').collection('tasks');
         const completeTaskCollection = client.db('taskCollection').collection('complete');
+        const withdrawCollection = client.db('withdrawCollection').collection('withdraw');
 
         // Get all packages
         app.get('/packages', async (req, res) => {
@@ -57,6 +58,13 @@ async function run() {
             const referFilter = { referedBy: filter.refCode }
             const totalrefer = await userCollection.find(referFilter).toArray();
             const result = { filter, totalrefer };
+            res.send(result);
+        });
+
+        app.get('/getUser/:email', async (req, res) => {
+            const user = req.params.email;
+            const filter = { email: user };
+            const result = await userCollection.findOne(filter);
             res.send(result);
         });
 
@@ -141,16 +149,58 @@ async function run() {
             res.send(result);
         });
 
-        app.post('/completeTask/:email', async (req, res) => {
+        app.put('/completeTask/:email', async (req, res) => {
             const email = req.params.email;
             const info = req.body;
             // user: user.email, taskId: id, date
-            const information = {
-                date: info.date, information: {
-                    taskId: info.taskId, user: info.user
+            // const information = {
+            //     date: info.date, information: {
+            //         taskId: info.taskId, user: info.user
+            //     }
+            // };
+            const newDate = info.date;
+            const filter = { information: info.taskId };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    newDate: newDate,
+                    user: info.user,
+                    information: {
+                        taskId: info.taskId, user: info.user, date: info.date
+                    }
                 }
             };
-            const result = await completeTaskCollection.insertOne(information);
+            const result = await completeTaskCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        app.get('/checkCompleted/:email', async (req, res) => {
+            const date = new Date().toISOString().slice(0, 10);
+            // const date = "2022-06-19";
+            const email = req.params.email;
+            const filter = { newDate: date, user: email };
+            const result = await completeTaskCollection.find(filter).toArray();
+            res.send(result);
+        });
+
+        app.put('/updateBalance/:email', async (req, res) => {
+            const email = req.params.email;
+            const newBalance = req.body;
+            console.log(newBalance);
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    balance: newBalance.newBalance,
+                }
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        app.post('/postWithdraw', async (req, res) => {
+            const withdraw = req.body;
+            const result = await withdrawCollection.insertOne(withdraw);
             res.send(result);
         })
     }
