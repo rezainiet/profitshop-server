@@ -21,7 +21,9 @@ async function run() {
         const userCollection = client.db('userCollection').collection('user');
         const referCollection = client.db('userCollection').collection('refer');
         const packageCollection = client.db('packageCollection').collection('package');
+        const usersPackageCollection = client.db('packageCollection').collection('usersPackage');
         const orderCollection = client.db('packageCollection').collection('orders');
+        const taskCollection = client.db('taskCollection').collection('tasks');
 
         // Get all packages
         app.get('/packages', async (req, res) => {
@@ -100,6 +102,36 @@ async function run() {
 
         app.get('/packageInfo', async (req, res) => {
             const result = await orderCollection.find().toArray();
+            res.send(result);
+        });
+        app.get('/purchased', async (req, res) => {
+            // const query = { status: "pending" };
+            const filter = await orderCollection.find({ status: "pending" });
+            const result = await filter.toArray();
+            res.send(result);
+        });
+
+        app.put('/getInfo/:id', async (req, res) => {
+            const id = req.params.id;
+            const state = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: state.newValue,
+                }
+            };
+            const result = await orderCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+        app.get('/tasks', async (req, res) => {
+            const result = await taskCollection.find().toArray();
+            res.send(result);
+        });
+
+        app.post('/successBuy', async (req, res) => {
+            const info = req.body;
+            const result = await usersPackageCollection.insertOne(info);
             res.send(result);
         })
     }
