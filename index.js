@@ -6,14 +6,26 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 require('dotenv').config()
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
-    res.setHeader('Access-Control-Allow-Methods', 'Content-Type', 'Authorization');
+
+//middleware
+// app.use(express.json());
+app.use(cors());
+const corsConfig = {
+    origin: "*",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+};
+app.use(cors(corsConfig));
+app.options("*", cors(corsConfig));
+app.use(express.json());
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept,authorization"
+    );
     next();
 });
-app.use(express.json());
-
 
 
 
@@ -60,7 +72,7 @@ async function run() {
             const email = req.params.email;
             const query = { email: email }
             const filter = await userCollection.findOne(query);
-            const referFilter = { referedBy: filter.refCode }
+            const referFilter = await { referedBy: filter.refCode };
             const totalrefer = await userCollection.find(referFilter).toArray();
             const result = { filter, totalrefer };
             res.send(result);
