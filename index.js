@@ -236,7 +236,12 @@ async function run() {
             const withdraw = req.body;
             const result = await withdrawCollection.insertOne(withdraw);
             res.send(result);
+        });
+        app.get('/getWithdraw', async (req, res) => {
+            const result = await withdrawCollection.find().toArray();
+            res.send(result);
         })
+
     }
     finally {
 
