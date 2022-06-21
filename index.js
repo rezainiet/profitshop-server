@@ -53,10 +53,10 @@ async function run() {
             const email = req.params.email;
             const query = { email: email }
             const filter = await userCollection.findOne(query);
-            const referFilter = await { referedBy: filter.refCode };
-            const totalrefer = await userCollection.find(referFilter).toArray();
-            const result = { filter, totalrefer };
-            res.send(result);
+            // const referFilter = await { referedBy: filter.refCode };
+            // const totalrefer = await userCollection.find(referFilter).toArray();
+            // const result = { filter, totalrefer };
+            res.send(filter);
         });
 
         app.get('/getUser/:email', async (req, res) => {
