@@ -1,48 +1,12 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
-const { query } = require('express');
 const app = express();
 const port = process.env.PORT || 4000;
 
-require('dotenv').config()
-
-//middleware
-// app.use(express.json());
-// app.use(cors());
-// const corsConfig = {
-//     origin: "*",
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-// };
-// app.use(cors(corsConfig));
-// app.options("*", cors(corsConfig));
-// app.use(express.json());
-// app.use(function (req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header(
-//         "Access-Control-Allow-Headers",
-//         "Origin, X-Requested-With, Content-Type, Accept,authorization"
-//     );
-//     next();
-// });
-const corsOpts = {
-    origin: '*',
-
-    methods: [
-        'GET',
-        'POST',
-        'PUT',
-        'PATCH',
-        'DELETE'
-    ],
-
-    allowedHeaders: [
-        'Content-Type',
-    ],
-};
-
-app.use(cors(corsOpts));
+require('dotenv').config();
+app.use(cors());
+app.use(express.json());
 
 
 
@@ -237,10 +201,11 @@ async function run() {
             const result = await withdrawCollection.insertOne(withdraw);
             res.send(result);
         });
+
         app.get('/getWithdraw', async (req, res) => {
             const result = await withdrawCollection.find().toArray();
             res.send(result);
-        })
+        });
 
     }
     finally {
