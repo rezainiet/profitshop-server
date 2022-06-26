@@ -28,6 +28,7 @@ async function run() {
         const allWithdrawCollection = client.db('withdrawCollection').collection('allWithdraw');
         const heroSliderCollection = client.db('homePage').collection('heroSlider');
         const contactCollection = client.db('others').collection('contactUS');
+        const reviewCollection = client.db('others').collection('reviews');
 
         // Get all packages
         app.get('/packages', async (req, res) => {
@@ -274,6 +275,16 @@ async function run() {
             const query = {};
             const result = await contactCollection.find(query).toArray();
             res.send(result);
+        });
+        app.post('/addReview', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
+        });
+        app.get('/reviews', async (req, res) => {
+            const query = {};
+            const reviews = await reviewCollection.find(query).toArray();
+            res.send(reviews);
         });
 
     }
