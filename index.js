@@ -24,6 +24,9 @@ async function run() {
         const taskCollection = client.db('taskCollection').collection('tasks');
         const completeTaskCollection = client.db('taskCollection').collection('complete');
         const withdrawCollection = client.db('withdrawCollection').collection('withdraw');
+        const successWithdrawCollection = client.db('withdrawCollection').collection('successWithdraw');
+        const allWithdrawCollection = client.db('withdrawCollection').collection('allWithdraw');
+        const heroSliderCollection = client.db('homePage').collection('heroSlider');
 
         // Get all packages
         app.get('/packages', async (req, res) => {
@@ -204,6 +207,58 @@ async function run() {
 
         app.get('/getWithdraw', async (req, res) => {
             const result = await withdrawCollection.find().toArray();
+            res.send(result);
+        });
+        app.get('/getWithdraw/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const result = await withdrawCollection.find(filter).toArray();
+            res.send(result);
+        });
+
+        app.put('/cutBalanceforWithdraw/:email', async (req, res) => {
+            const email = req.params.email;
+            const newBalance = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    balance: newBalance.newBalance,
+                }
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        app.put('/completedWithdraw/:id', async (req, res) => {
+            const id = req.params.id;
+            const state = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: state.newValue,
+                }
+            };
+            const result = await withdrawCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        app.post('/successWithdraw', async (req, res) => {
+            const data = req.body;
+            const result = await successWithdrawCollection.insertOne(data);
+            res.send(result);
+        });
+
+        app.post('/allWithdrawResult', async (req, res) => {
+            const body = req.body;
+            const result = await allWithdrawCollection.insertOne(body);
+            res.send(result);
+        });
+
+        app.post('/addAds', async (req, res) => {
+            const ads = req.body;
+            const result = await taskCollection.insertOne(ads);
             res.send(result);
         });
 
