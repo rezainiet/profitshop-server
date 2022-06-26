@@ -27,6 +27,7 @@ async function run() {
         const successWithdrawCollection = client.db('withdrawCollection').collection('successWithdraw');
         const allWithdrawCollection = client.db('withdrawCollection').collection('allWithdraw');
         const heroSliderCollection = client.db('homePage').collection('heroSlider');
+        const contactCollection = client.db('others').collection('contactUS');
 
         // Get all packages
         app.get('/packages', async (req, res) => {
@@ -259,6 +260,19 @@ async function run() {
         app.post('/addAds', async (req, res) => {
             const ads = req.body;
             const result = await taskCollection.insertOne(ads);
+            res.send(result);
+        });
+
+        app.post('/contact', async (req, res) => {
+            const message = req.body;
+            const result = await contactCollection.insertOne(message);
+            res.send(result);
+        });
+
+        // for admin who can see contact messages
+        app.get('/getContact', async (req, res) => {
+            const query = {};
+            const result = await contactCollection.find(query).toArray();
             res.send(result);
         });
 
