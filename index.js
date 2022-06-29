@@ -286,6 +286,17 @@ async function run() {
             const reviews = await reviewCollection.find(query).toArray();
             res.send(reviews);
         });
+        app.post('/referCreated', async (req, res) => {
+            const data = req.body;
+            const result = await referCollection.insertOne(data);
+            res.send(result);
+        });
+        app.get('/getRefs/:refCode', async (req, res) => {
+            const refCode = req.params.refCode;
+            const filter = { refCode: refCode };
+            const result = await referCollection.find(filter).toArray();
+            res.send(result);
+        });
 
     }
     finally {
