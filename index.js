@@ -185,6 +185,12 @@ async function run() {
             const result = await completeTaskCollection.find(filter).toArray();
             res.send(result);
         });
+        app.get('/checkUsersTask/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { user: email };
+            const result = await completeTaskCollection.find(filter).toArray();
+            res.send(result);
+        });
 
         app.put('/updateBalance/:email', async (req, res) => {
             const email = req.params.email;
