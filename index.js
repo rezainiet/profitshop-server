@@ -29,6 +29,7 @@ async function run() {
         const heroSliderCollection = client.db('homePage').collection('heroSlider');
         const contactCollection = client.db('others').collection('contactUS');
         const reviewCollection = client.db('others').collection('reviews');
+        const topInvestorCollection = client.db('others').collection('topInvestor');
 
         // Get all packages
         app.get('/packages', async (req, res) => {
@@ -301,6 +302,11 @@ async function run() {
             const refCode = req.params.refCode;
             const filter = { refCode: refCode };
             const result = await referCollection.find(filter).toArray();
+            res.send(result);
+        });
+        app.get('/topInvestors', async (req, res) => {
+            const query = {};
+            const result = await topInvestorCollection.find(query).toArray();
             res.send(result);
         });
 
