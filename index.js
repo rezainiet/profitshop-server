@@ -30,6 +30,8 @@ async function run() {
         const contactCollection = client.db('others').collection('contactUS');
         const reviewCollection = client.db('others').collection('reviews');
         const topInvestorCollection = client.db('others').collection('topInvestor');
+        const marqueeUpcomingCollection = client.db('others').collection('marqueeUpcoming');
+        const marqueeUserCollection = client.db('others').collection('marqueeUsers');
 
         // Get all packages
         app.get('/packages', async (req, res) => {
@@ -307,6 +309,17 @@ async function run() {
         app.get('/topInvestors', async (req, res) => {
             const query = {};
             const result = await topInvestorCollection.find(query).toArray();
+            res.send(result);
+        });
+        app.get('/upcoming', async (req, res) => {
+            const query = {};
+            const result = await marqueeUpcomingCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        app.get('/mUsers', async (req, res) => {
+            const query = {};
+            const result = await marqueeUserCollection.find(query).toArray();
             res.send(result);
         });
 
