@@ -32,6 +32,7 @@ async function run() {
         const topInvestorCollection = client.db('others').collection('topInvestor');
         const marqueeUpcomingCollection = client.db('others').collection('marqueeUpcoming');
         const marqueeUserCollection = client.db('others').collection('marqueeUsers');
+        const agentApplyCollection = client.db('others').collection('agentApply');
 
         // Get all packages
         app.get('/packages', async (req, res) => {
@@ -357,6 +358,11 @@ async function run() {
         app.get('/mUsers', async (req, res) => {
             const query = {};
             const result = await marqueeUserCollection.find(query).toArray();
+            res.send(result);
+        });
+        app.post('/applyAgent', async (req, res) => {
+            const data = req.body;
+            const result = await agentApplyCollection.insertOne(data);
             res.send(result);
         });
 
