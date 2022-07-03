@@ -102,9 +102,24 @@ async function run() {
             const result = await packageCollection.findOne(filter);
             res.send(result);
         });
-        app.post('/purchase', async (req, res) => {
+        app.put('/purchase/:email', async (req, res) => {
+            const email = req.params.email;
             const order = req.body;
-            const result = await orderCollection.insertOne(order);
+            // const { transactionId, buyer, status, packageName, price, ads, perAds } = order;
+            const filter = { buyer: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    transactionId: order.transactionId,
+                    buyer: order.buyer,
+                    status: order.status,
+                    packageName: order.packageName,
+                    price: order.price,
+                    ads: order.ads,
+                    perAds: order.perAds
+                }
+            }
+            const result = await orderCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         });
 
@@ -144,11 +159,33 @@ async function run() {
             res.send(result);
         });
 
-        app.post('/successBuy', async (req, res) => {
+        // app.post('/successBuy', async (req, res) => {
+        //     const info = req.body;
+        //     const result = await usersPackageCollection.insertOne(info);
+        //     res.send(result);
+        // });
+
+
+        app.put('/successBuy/:email', async (req, res) => {
+            const email = req.params.email;
             const info = req.body;
-            const result = await usersPackageCollection.insertOne(info);
+            const filter = { buyer: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    packageName: info.packageName,
+                    buyer: info.buyer,
+                    price: info.price,
+                    date: info.date,
+                    perAds: info.perAds,
+                    ads: info.ads
+                }
+            };
+            const result = await usersPackageCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         });
+
+
         app.get('/checkPackage/:email', async (req, res) => {
             const userEmail = req.params.email;
             const result = await usersPackageCollection.findOne({ buyer: userEmail });
